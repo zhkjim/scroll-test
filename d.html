@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Title</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        .container{
+            position: absolute;
+            width:100%;
+        }
+        .scroll{
+            width:100%;
+            position: absolute;
+        }
+        .t-item{
+            width:100%;
+            height: 100px;
+            line-height: 100px;
+            border-bottom: 1px solid #333;
+            text-align: center;
+        }
+        .bottom{
+            width:100%;
+            text-align: center;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class = 'scroll'>
+        <div class="t-item">a</div>
+        <div class="t-item">a</div>
+        <div class="t-item">a</div>
+        <div class="t-item">a</div>
+        <div class="t-item">a</div>
+        <div class="t-item">a</div>
+        <div class="t-item">a</div>
+        <div class="t-item">a</div>
+        <div class="t-item">a</div>
+        <div class="t-item">a</div>
+        <div class="t-item">a</div>
+        <div class="t-item">a</div>
+        <div class="t-item">a</div>
+    </div>
+</div>
+</body>
+
+<script>
+    var scroll = document.querySelector('.scroll');
+    var outerScroller = document.querySelector('.container');
+    var touchStart = 0;
+    var Distance=0;
+    var singleton1=true;
+    var singleton2=true;
+        outerScroller.addEventListener('touchstart', function (event) {
+            var touch = event.targetTouches[0];
+            touchStart = touch.pageY;
+            console.info(singleton1);
+            if (singleton1==true&&touchStart <= document.body.scrollHeight && touchStart >= document.body.scrollHeight - window.screen.height) {
+                singleton1=false;
+                var node = document.createElement("div");
+                node.className = 'bottom';
+                node.innerHTML = "something";
+                scroll.appendChild(node);singleton=false;
+            }
+        }, false);
+
+        outerScroller.addEventListener('touchmove', function (event) {
+            var node = document.querySelector(".bottom");
+            if (node == undefined) {
+                return 0;
+            }
+            else {
+                var touch = event.targetTouches[0];
+                Distance = touchStart - touch.pageY;
+                if (Distance <= 100) {
+                    document.getElementsByClassName("bottom")[0].style.height = touchStart - touch.pageY + 'px';
+                }
+            }
+        }, false);
+
+        outerScroller.addEventListener('touchend', function (event) {
+            var node = document.querySelector(".bottom");
+            if (node == undefined) {
+                return 0;
+            }
+            else {
+                if (Distance >= 100) shuaxin();
+                if (Distance > 0&&document.getElementsByClassName("bottom")[0]!=undefined&&singleton2==true) {
+                var time = setInterval(function(){
+                    document.getElementsByClassName("bottom")[0].style.height =parseFloat( document.getElementsByClassName("bottom")[0].style.height) -2+'px';
+                    Distance-=2;
+                    if(document.getElementsByClassName("bottom")[0] && parseFloat(document.getElementsByClassName("bottom")[0].style.height) <= 3)
+                    {
+                        clearInterval(time);
+                        scroll.removeChild(node);
+                        singleton1=true;
+                        singleton2=true;}
+                },1);
+
+                }
+            }
+        }, false);
+
+
+    function shuaxin(){
+        var xmlhttp;var Js;
+        if (window.XMLHttpRequest)
+        {
+            xmlhttp=new XMLHttpRequest();
+        }
+        xmlhttp.onreadystatechange=function () {
+            if(xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+                Js=eval("("+xmlhttp.responseText+")");
+                for(var i in Js.data) {
+                    var c=document.createElement("div");
+                    c.className='t-item';
+                    c.innerHTML=(Js.data[i].name);
+                    scroll.appendChild(c);}
+            }
+        };
+        xmlhttp.open("GET","test.json",true);
+        xmlhttp.send();
+
+    }
+</script>
+</html>
